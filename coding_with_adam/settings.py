@@ -32,7 +32,10 @@ DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
 allowed_hosts = os.environ.get("DJANGO_ALLOWED_HOSTS", "*")
 ALLOWED_HOSTS = [host.strip() for host in allowed_hosts.split(",") if host.strip()]
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://channel-production-0855.up.railway.app/",
+]
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
 INSTALLED_APPS = [
