@@ -11,21 +11,25 @@
     </div>
   </div>
 
-  <form method="post" class="episode-form">
-    {% csrf_token %}
-    <input type="text" name="title" placeholder="اسم الحلقة" required />
-    <div class="mode-switch">
-      <label class="mode-pill">
-        <input type="radio" name="mode" value="podcast" checked />
-        <span>بودكاست</span>
-      </label>
-      <label class="mode-pill">
-        <input type="radio" name="mode" value="video" />
-        <span>فيديو عادي</span>
-      </label>
-    </div>
-    <button class="primary" type="submit">إنشاء الحلقة</button>
-  </form>
+  {% if user.is_superuser %}
+    <form method="post" class="episode-form">
+      {% csrf_token %}
+      <input type="text" name="title" placeholder="اسم الحلقة" required />
+      <div class="mode-switch">
+        <label class="mode-pill">
+          <input type="radio" name="mode" value="podcast" checked />
+          <span>بودكاست</span>
+        </label>
+        <label class="mode-pill">
+          <input type="radio" name="mode" value="video" />
+          <span>فيديو عادي</span>
+        </label>
+      </div>
+      <button class="primary" type="submit">إنشاء الحلقة</button>
+    </form>
+  {% else %}
+    <p class="muted">وضع المشاهدة فقط. تسجيل الدخول للمدير للتعديل.</p>
+  {% endif %}
 </section>
 
 <section class="panel">

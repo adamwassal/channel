@@ -27,23 +27,27 @@
       </div>
     </div>
 
-    <form method="post" action="{% url 'add-section' episode.id %}" class="section-entry">
-      {% csrf_token %}
-      <input name="section_name" type="text" placeholder="أضف سيكشن جديد (مثلا المقدمة)" />
-      <button class="ghost" type="submit">إضافة سيكشن</button>
-    </form>
+    {% if user.is_superuser %}
+      <form method="post" action="{% url 'add-section' episode.id %}" class="section-entry">
+        {% csrf_token %}
+        <input name="section_name" type="text" placeholder="أضف سيكشن جديد (مثلا المقدمة)" />
+        <button class="ghost" type="submit">إضافة سيكشن</button>
+      </form>
 
-    <form method="post" action="{% url 'add-question' episode.id %}" class="question-entry">
-      {% csrf_token %}
-      <input id="question-input" name="question" type="text" placeholder="اكتب سؤال جديد..." required />
-      <select name="section_id">
-        <option value="">عام</option>
-        {% for section in sections %}
-          <option value="{{ section.id }}">{{ section.name }}</option>
-        {% endfor %}
-      </select>
-      <button id="add-question" class="primary" type="submit">اضافة السؤال</button>
-    </form>
+      <form method="post" action="{% url 'add-question' episode.id %}" class="question-entry">
+        {% csrf_token %}
+        <input id="question-input" name="question" type="text" placeholder="اكتب سؤال جديد..." required />
+        <select name="section_id">
+          <option value="">عام</option>
+          {% for section in sections %}
+            <option value="{{ section.id }}">{{ section.name }}</option>
+          {% endfor %}
+        </select>
+        <button id="add-question" class="primary" type="submit">اضافة السؤال</button>
+      </form>
+    {% else %}
+      <p class="muted">وضع المشاهدة فقط. تسجيل الدخول للمدير للتعديل.</p>
+    {% endif %}
 
     <div class="question-viewer" id="question-viewer">
       <button type="button" class="icon-btn fs-close" id="fullscreen-exit" aria-label="Exit fullscreen"  style=" justify-content: center; align-items: center; text-align: center;">
@@ -69,22 +73,24 @@
                 <button type="button" class="question-item" data-index="{{ q.index }}">
                   <span class="question-text">{{ q.text }}</span>
                 </button>
-                <details class="question-edit">
-                  <summary class="edit-toggle">تعديل</summary>
-                  <form method="post" action="{% url 'update-question' episode.id q.id %}">
-                    {% csrf_token %}
-                    <input name="question_text" type="text" value="{{ q.text }}" />
-                    <select name="section_id">
-                      <option value="" {% if q.section == "عام" %}selected{% endif %}>عام</option>
-                      {% for section in sections %}
-                        <option value="{{ section.id }}" {% if section.name == q.section %}selected{% endif %}>
-                          {{ section.name }}
-                        </option>
-                      {% endfor %}
-                    </select>
-                    <button class="primary" type="submit">حفظ</button>
-                  </form>
-                </details>
+                {% if user.is_superuser %}
+                  <details class="question-edit">
+                    <summary class="edit-toggle">تعديل</summary>
+                    <form method="post" action="{% url 'update-question' episode.id q.id %}">
+                      {% csrf_token %}
+                      <input name="question_text" type="text" value="{{ q.text }}" />
+                      <select name="section_id">
+                        <option value="" {% if q.section == "عام" %}selected{% endif %}>عام</option>
+                        {% for section in sections %}
+                          <option value="{{ section.id }}" {% if section.name == q.section %}selected{% endif %}>
+                            {{ section.name }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                      <button class="primary" type="submit">حفظ</button>
+                    </form>
+                  </details>
+                {% endif %}
               </div>
             {% endfor %}
           </div>

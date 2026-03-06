@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}تسجيل الدخول | Coding with Adam{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <h2>تسجيل الدخول</h2>
+      <p>الدخول متاح للمدير فقط.</p>
+    </div>
+  </div>
+
+  <form method="post" class="auth-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <label>
+      <span>اسم المستخدم</span>
+      {{ form.username }}
+    </label>
+    <label>
+      <span>كلمة المرور</span>
+      {{ form.password }}
+    </label>
+    <button class="primary" type="submit">دخول</button>
+  </form>
+</section>
+{% endblock %}

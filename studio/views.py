@@ -1,12 +1,17 @@
 from django.db.models import Max
 from django.shortcuts import get_object_or_404, redirect, render
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.http import require_POST
 
 from .models import Episode, Question, Section
 
 
+def _is_admin(user) -> bool:
+    return user.is_authenticated and user.is_superuser
+
+
 def home(request):
-    if request.method == "POST":
+    if request.method == "POST" and _is_admin(request.user):
         title = request.POST.get("title", "").strip()
         mode = request.POST.get("mode", "").strip()
         if title and mode in {Episode.MODE_PODCAST, Episode.MODE_VIDEO}:
@@ -48,6 +53,8 @@ def episode_detail(request, episode_id: int):
 
 
 @require_POST
+@login_required
+@user_passes_test(_is_admin)
 def add_question(request, episode_id: int):
     episode = get_object_or_404(Episode, id=episode_id)
     text = request.POST.get("question", "").strip()
@@ -69,6 +76,8 @@ def add_question(request, episode_id: int):
 
 
 @require_POST
+@login_required
+@user_passes_test(_is_admin)
 def add_section(request, episode_id: int):
     episode = get_object_or_404(Episode, id=episode_id)
     name = request.POST.get("section_name", "").strip()
@@ -78,6 +87,8 @@ def add_section(request, episode_id: int):
 
 
 @require_POST
+@login_required
+@user_passes_test(_is_admin)
 def update_question(request, episode_id: int, question_id: int):
     episode = get_object_or_404(Episode, id=episode_id)
     question = get_object_or_404(Question, id=question_id, episode=episode)
@@ -96,6 +107,8 @@ def update_question(request, episode_id: int, question_id: int):
 
 
 @require_POST
+@login_required
+@user_passes_test(_is_admin)
 def update_script(request, episode_id: int):
     episode = get_object_or_404(Episode, id=episode_id)
     if episode.mode == Episode.MODE_VIDEO:

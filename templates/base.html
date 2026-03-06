@@ -18,6 +18,14 @@
       <p class="subtitle">
         منصة منظمة لتجهيز حلقات القناة: بودكاست بأسئلة منفصلة أو فيديو عادي بسكريبت كامل.
       </p>
+      <div class="auth-bar">
+        {% if user.is_authenticated %}
+          <span class="muted">مرحبًا {{ user.username }}</span>
+          <a class="ghost" href="{% url 'logout' %}">خروج</a>
+        {% else %}
+          <a class="ghost" href="{% url 'login' %}">تسجيل الدخول</a>
+        {% endif %}
+      </div>
     </header>
 
     {% block content %}{% endblock %}
