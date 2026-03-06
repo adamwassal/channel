@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ episode.title }} | Coding with Adam{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <h2>{{ episode.title }}</h2>
+      <p>نوع الحلقة: {{ episode.get_mode_display }}</p>
+    </div>
+    <a class="ghost" href="{% url 'home' %}">رجوع للحلقات</a>
+  </div>
+
+  {% if episode.mode == 'podcast' %}
+    <div class="panel-header">
+      <div>
+        <h3>أسئلة الحلقة</h3>
+        <p>أضف الأسئلة والتنقل بينها بالأسهم.</p>
+      </div>
+      <div class="panel-actions">
+        <button type="button" class="icon-btn" id="questions-fullscreen" aria-label="Fullscreen">
+          ⤢
+        </button>
+        <div class="counter question-counter" id="question-counter">0 / 0</div>
+        <div class="counter question-remaining" id="question-remaining">متبقي 0</div>
+      </div>
+    </div>
+
+    <form method="post" action="{% url 'add-section' episode.id %}" class="section-entry">
+      {% csrf_token %}
+      <input name="section_name" type="text" placeholder="أضف سيكشن جديد (مثلا المقدمة)" />
+      <button class="ghost" type="submit">إضافة سيكشن</button>
+    </form>
+
+    <form method="post" action="{% url 'add-question' episode.id %}" class="question-entry">
+      {% csrf_token %}
+      <input id="question-input" name="question" type="text" placeholder="اكتب سؤال جديد..." required />
+      <select name="section_id">
+        <option value="">عام</option>
+        {% for section in sections %}
+          <option value="{{ section.id }}">{{ section.name }}</option>
+        {% endfor %}
+      </select>
+      <button id="add-question" class="primary" type="submit">اضافة السؤال</button>
+    </form>
+
+    <div class="question-viewer" id="question-viewer">
+      <button type="button" class="icon-btn fs-close" id="fullscreen-exit" aria-label="Exit fullscreen"  style=" justify-content: center; align-items: center; text-align: center;">
+        ×
+      </button>
+      <div class="counter question-counter fs-counter">0 / 0</div>
+      <div class="counter question-remaining fs-remaining">متبقي 0</div>
+      <div class="section-badge fs-section" id="fs-section">عام</div>
+      <button class="nav-btn" id="next-question" aria-label="Next">&#8594;</button>
+      <div class="question-card" id="question-card">
+        <span class="muted">مفيش اسئلة لسه. ابدأ بكتابة اول سؤال.</span>
+      </div>
+      <button class="nav-btn" id="prev-question" aria-label="Previous">&#8592;</button>
+    </div>
+
+    <div class="question-list" id="question-list">
+      {% for group in section_groups %}
+        <div class="question-section">
+          <div class="section-title">{{ group.name }}</div>
+          <div class="section-list">
+            {% for q in group.questions %}
+              <div class="question-row">
+                <button type="button" class="question-item" data-index="{{ q.index }}">
+                  <span class="question-text">{{ q.text }}</span>
+                </button>
+                <details class="question-edit">
+                  <summary class="edit-toggle">تعديل</summary>
+                  <form method="post" action="{% url 'update-question' episode.id q.id %}">
+                    {% csrf_token %}
+                    <input name="question_text" type="text" value="{{ q.text }}" />
+                    <select name="section_id">
+                      <option value="" {% if q.section == "عام" %}selected{% endif %}>عام</option>
+                      {% for section in sections %}
+                        <option value="{{ section.id }}" {% if section.name == q.section %}selected{% endif %}>
+                          {{ section.name }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                    <button class="primary" type="submit">حفظ</button>
+                  </form>
+                </details>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div
+      class="episode-data"
+      data-questions='[{% for q in questions %}{"text":"{{ q.text|escapejs }}","section":"{{ q.section|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}]'>
+    </div>
+  {% else %}
+    <div class="panel-header">
+      <div>
+        <h3>سكريبت الحلقة</h3>
+        <p>اكتب السكريبت بالكامل وخليه جاهز للتصوير.</p>
+      </div>
+      <div class="counter" id="video-length">0 كلمة</div>
+    </div>
+
+    <form method="post" action="{% url 'update-script' episode.id %}" class="script-form">
+      {% csrf_token %}
+      <textarea id="video-script" name="script" placeholder="اكتب الاسكريبت هنا...">{{ episode.script }}</textarea>
+      <button class="primary" type="submit">حفظ السكريبت</button>
+    </form>
+    <div class="tip">نصيحة: قسم الاسكريبت لفقرات قصيرة عشان الأداء يبقى أفضل على الكاميرا.</div>
+  {% endif %}
+</section>
+{% endblock %}

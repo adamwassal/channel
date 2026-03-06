@@ -1,0 +1,28 @@
+{% load static %}
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Coding with Adam{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}" />
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="grid"></div>
+
+  <main class="shell">
+    <header class="hero">
+      <p class="badge">Studio Planner</p>
+      <h1>Coding with Adam</h1>
+      <p class="subtitle">
+        منصة منظمة لتجهيز حلقات القناة: بودكاست بأسئلة منفصلة أو فيديو عادي بسكريبت كامل.
+      </p>
+    </header>
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>

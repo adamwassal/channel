@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Coding with Adam | الحلقات{% endblock %}
+
+{% block content %}
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <h2>إضافة حلقة جديدة</h2>
+      <p>حدد نوع التصوير واكتب اسم الحلقة.</p>
+    </div>
+  </div>
+
+  <form method="post" class="episode-form">
+    {% csrf_token %}
+    <input type="text" name="title" placeholder="اسم الحلقة" required />
+    <div class="mode-switch">
+      <label class="mode-pill">
+        <input type="radio" name="mode" value="podcast" checked />
+        <span>بودكاست</span>
+      </label>
+      <label class="mode-pill">
+        <input type="radio" name="mode" value="video" />
+        <span>فيديو عادي</span>
+      </label>
+    </div>
+    <button class="primary" type="submit">إنشاء الحلقة</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-header">
+    <div>
+      <h2>الحلقات الحالية</h2>
+      <p>كل حلقة منظمة بمحتواها.</p>
+    </div>
+    <div class="counter">{{ episodes|length }} حلقة</div>
+  </div>
+
+  {% if episodes %}
+    <div class="episode-grid">
+      {% for episode in episodes %}
+        <a class="episode-card" href="{% url 'episode-detail' episode.id %}">
+          <div class="episode-top">
+            <span class="tag">{{ episode.get_mode_display }}</span>
+            <span class="date">{{ episode.created_at|date:"d M Y" }}</span>
+          </div>
+          <h3>{{ episode.title }}</h3>
+          <p>
+            {% if episode.mode == 'podcast' %}
+              {{ episode.questions.count }} سؤال
+            {% else %}
+              سكريبت {{ episode.script|length }} حرف
+            {% endif %}
+          </p>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="muted">مفيش حلقات لسه. ابدأ بإنشاء أول حلقة.</p>
+  {% endif %}
+</section>
+{% endblock %}
