@@ -11,7 +11,8 @@
       "use": "@vercel/python",
       "config": {
         "includeFiles": [
-          "templates/**"
+          "templates/**",
+          "public/static/**"
         ]
       }
     }

@@ -165,6 +165,7 @@ STORAGES = {
         'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
     },
 }
+WHITENOISE_MANIFEST_STRICT = False
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
