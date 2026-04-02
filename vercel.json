@@ -3,18 +3,23 @@
   "buildCommand": "python3 manage.py collectstatic --noinput",
   "builds": [
     {
+      "src": "public/**",
+      "use": "@vercel/static"
+    },
+    {
       "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
         "includeFiles": [
-          "staticfiles/**",
-          "static/**",
           "templates/**"
         ]
       }
     }
   ],
   "routes": [
+    {
+      "handle": "filesystem"
+    },
     {
       "src": "/(.*)",
       "dest": "api/index.py"
